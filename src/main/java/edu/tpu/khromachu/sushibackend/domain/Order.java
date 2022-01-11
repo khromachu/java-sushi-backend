@@ -1,35 +1,34 @@
 package edu.tpu.khromachu.sushibackend.domain;
 
 import edu.tpu.khromachu.sushibackend.domain.User;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "Orders", indexes = {
-        @Index(name = "orders_createdat_index", columnList = "createdAt")
-})
+@Table(name = "Orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Lob
     @Column(name = "clientName", nullable = false)
     private String clientName;
 
-    @Lob
     @Column(name = "clientPhone", nullable = false)
     private String clientPhone;
 
     @Column(name = "createdAt", nullable = false)
+    @CreatedDate
     private OffsetDateTime createdAt;
 
     @Column(name = "updatedAt", nullable = false)
+    @LastModifiedDate
     private OffsetDateTime updatedAt;
 
-    @Lob
     @Column(name = "address", nullable = false)
     private String address;
 

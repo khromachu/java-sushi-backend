@@ -3,22 +3,17 @@ package edu.tpu.khromachu.sushibackend.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ItemTypes", indexes = {
-        @Index(name = "itemtypes_type_uindex", columnList = "type", unique = true),
-        @Index(name = "itemtypes_urlname_uindex", columnList = "urlName", unique = true)
-})
+@Table(name = "ItemTypes")
 public class ItemType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Lob
-    @Column(name = "type")
+    @Column(name = "type", unique = true)
     private String type;
 
-    @Lob
-    @Column(name = "urlName", nullable = false)
+    @Column(name = "urlName", nullable = false, unique = true)
     private String urlName;
 
     public String getUrlName() {

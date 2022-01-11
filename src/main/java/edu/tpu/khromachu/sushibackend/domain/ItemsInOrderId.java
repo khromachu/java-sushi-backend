@@ -4,30 +4,36 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 public class ItemsInOrderId implements Serializable {
     private static final long serialVersionUID = 1743109862776444506L;
-    @Column(name = "itemId", nullable = false)
-    private Integer itemId;
-    @Column(name = "orderId", nullable = false)
-    private Integer orderId;
 
-    public Integer getOrderId() {
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "itemId", nullable = false)
+    private Item itemId;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "orderId", nullable = false)
+    private Order orderId;
+
+    public Order getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(Order orderId) {
         this.orderId = orderId;
     }
 
-    public Integer getItemId() {
+    public Item getItemId() {
         return itemId;
     }
 
-    public void setItemId(Integer itemId) {
+    public void setItemId(Item itemId) {
         this.itemId = itemId;
     }
 

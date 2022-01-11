@@ -3,27 +3,22 @@ package edu.tpu.khromachu.sushibackend.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Items", indexes = {
-        @Index(name = "items_name_uindex", columnList = "name", unique = true)
-})
+@Table(name = "Items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Lob
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "cost", nullable = false)
     private Double cost;
 
-    @Lob
     @Column(name = "imgUrl", nullable = false)
     private String imgUrl;
 
-    @Lob
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -33,15 +28,16 @@ public class Item {
     @Column(name = "show", nullable = false)
     private Boolean show = false;
 
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "itemTypeId", nullable = false)
     private ItemType itemTypeId;
 
-    public ItemType getItemTypeId() {
+    public ItemType getItemType() {
         return itemTypeId;
     }
 
-    public void setItemTypeId(ItemType itemTypeId) {
+    public void setItemType(ItemType itemTypeId) {
         this.itemTypeId = itemTypeId;
     }
 

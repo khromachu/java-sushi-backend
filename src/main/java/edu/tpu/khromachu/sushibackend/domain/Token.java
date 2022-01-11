@@ -8,7 +8,7 @@ import java.util.UUID;
 @Table(name = "Tokens")
 public class Token {
     @Id
-    @Column(name = "token", nullable = false)
+    @Column(name = "token", nullable = false, unique = true)
     private UUID id;
 
     @Column(name = "expireAt")

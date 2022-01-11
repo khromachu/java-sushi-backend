@@ -3,41 +3,31 @@ package edu.tpu.khromachu.sushibackend.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Users", indexes = {
-        @Index(name = "users_login_uindex", columnList = "login", unique = true),
-        @Index(name = "users_usertype_index", columnList = "userType"),
-        @Index(name = "users_phone_uindex", columnList = "phone", unique = true)
-})
+@Table(name = "Users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, unique = true)
     private Integer id;
 
-    @Lob
-    @Column(name = "login", nullable = false)
+    @Column(name = "login", nullable = false, unique = true)
     private String login;
 
-    @Lob
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Lob
-    @Column(name = "phone")
+    @Column(name = "phone", unique = true)
     private String phone;
 
     @Column(name = "userType", nullable = false)
     private Integer userType;
 
-    @Lob
     @Column(name = "firstName", nullable = false)
     private String firstName;
 
-    @Lob
     @Column(name = "secondName")
     private String secondName;
 
-    @Lob
     @Column(name = "address")
     private String address;
 
