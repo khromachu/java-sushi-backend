@@ -1,8 +1,10 @@
 package edu.tpu.khromachu.sushibackend.controllers;
 
 import edu.tpu.khromachu.sushibackend.domain.Order;
+import edu.tpu.khromachu.sushibackend.domain.User;
 import edu.tpu.khromachu.sushibackend.repository.OrderRepository;
 
+import edu.tpu.khromachu.sushibackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +15,13 @@ import java.util.Map;
 
 @RestController
 public class OrdersController {
+
     @Autowired
     private OrderRepository or;
+
+    @Autowired
+    private UserRepository ur;
+
 
     //router.get('/get/all/:userId', async (req,res) => {
     //  try{

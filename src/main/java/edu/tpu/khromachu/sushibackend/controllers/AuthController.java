@@ -1,101 +1,102 @@
 package edu.tpu.khromachu.sushibackend.controllers;
 
-import edu.tpu.khromachu.sushibackend.bean.JsonResult;
 import edu.tpu.khromachu.sushibackend.domain.Item;
 import edu.tpu.khromachu.sushibackend.domain.ItemType;
+import edu.tpu.khromachu.sushibackend.domain.Token;
 import edu.tpu.khromachu.sushibackend.domain.User;
+import edu.tpu.khromachu.sushibackend.repository.TokenRepository;
 import edu.tpu.khromachu.sushibackend.repository.UserRepository;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.GeneratedValue;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @RestController
 public class AuthController {
 
-    static Map<Integer, User> users = Collections.synchronizedMap(new HashMap<Integer, User>());
-
     @Autowired
     private UserRepository ur;
 
-    //router.post('/by/pwd', async (req,res) => {
-    //  try{
-    //    const authData = req.body
-    //    const userToAuth = await db.Users.findOne(
-    //      { where: {
-    //          login: authData.login,
-    //          password: authData.password
-    //        }
-    //      })
-    //    if (!userToAuth) {
-    //      res.status(404).send(`Error: no user with login ${authData.login}`)
-    //    }
-    //    else if (authData?.password === userToAuth.password){
-    //      await db.Tokens.destroy({ where: {
-    //          expireAt: {[Op.lt]: new Date()}
-    //        }
-    //      })
-    //      const expireDate = new Date()
-    //      expireDate.setDate(expireDate.getDate() + 30)
-    //      const token = await db.Tokens.create({
-    //        userId: userToAuth.id,
-    //        expireAt: expireDate
-    //      })
-    //      res.json({user: userToAuth, token: token.token})
-    //    }
-    //    else
-    //      res.status(401).send('Password is incorrect')
-    //  }
-    //  catch (err){
-    //    res.status(500).send(err.message)
-    //  }
-    //
-    //})
-    //router.post('/by/token', async (req,res) => {
-    //  try{
-    //    const authData = req.body
-    //    const tokenInDb = await db.Tokens.findByPk(authData?.token)
-    //    if (!tokenInDb) {
-    //      res.status(404).send(`Error: token not found`)
-    //    }
-    //    else if (new Date(tokenInDb.expireAt) > new Date()) {
-    //      const expireDate = new Date()
-    //      expireDate.setDate(expireDate.getDate() + 30)
-    //      tokenInDb.expireAt = expireDate.toISOString()
-    //      await tokenInDb.save()
-    //      const user = await db.Users.findByPk(tokenInDb.userId)
-    //      res.send({ user, token: tokenInDb.token })
-    //    }
-    //    else {
-    //      await tokenInDb.destroy()
-    //      res.status(401).send('Token expired')
-    //    }
-    //  }
-    //  catch (err){
-    //    res.status(500).send(err.message)
-    //  }
-    //
-    //})
-    //router.post('/logout', async (req,res) => {
-    //  try{
-    //    const authData = req.body
-    //    console.log(authData)
-    //    const tokenInDb = await db.Tokens.findByPk(authData?.token)
-    //    if (!tokenInDb) {
-    //      res.status(404).send(`Error: token not found`)
-    //    }
-    //    else {
-    //      await tokenInDb.destroy()
-    //      res.send('Unauthorised successful')
-    //    }
-    //  }
-    //  catch (err){
-    //    res.status(500).send(err.message)
-    //  }
-    //
-    //})
+    @Autowired
+    private TokenRepository tr;
+
+    public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
+    public static Date addDays(Date date, int days)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+        return cal.getTime();
+    }
+
+    @PostMapping("/api/auth/by/pwd")
+    public ResponseEntity<Map<String, Object>> authByPwd(@RequestBody Map<String, Object> authData){
+        User userToAuth = ur.findUserByLoginAndPassword((String) authData.get("login"), (String) authData.get("password"));
+        if (userToAuth == null) {
+            return (ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
+        }
+        else if (authData.get("password") != userToAuth.getPassword()){
+            tr.deleteAllByExpireAtBefore(convertToLocalDateViaInstant(new Date()));
+        }
+        Token newToken = new Token();
+        Date today = new Date();
+        UUID uniqueKey = UUID.randomUUID();
+
+        newToken.setId(uniqueKey);
+        newToken.setUserId(userToAuth);
+        newToken.setExpireAt(convertToLocalDateViaInstant(addDays(today,30)));
+
+        tr.save(newToken);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @PostMapping("/api/auth/by/token")
+    public ResponseEntity<Map<String, Object>> authByToken(@RequestBody Map<String, Object> authData) {
+    Token tokenInDb = tr.findTokenById(UUID.fromString((String) authData.get("token")));
+    Date date = new Date();
+
+        if (tokenInDb == null) {
+            return (ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+        }
+        else if (tokenInDb.getExpireAt().isAfter(convertToLocalDateViaInstant(date))) {
+        Date expireDate = new Date();
+        tokenInDb.setExpireAt(convertToLocalDateViaInstant(addDays(expireDate,30)));
+        tr.save(tokenInDb);
+
+        User user = tokenInDb.getUserId();
+        System.out.println(user);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+        }
+        else {
+            tr.delete(tokenInDb);
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @PostMapping("/api/logout")
+    public ResponseEntity<Map<String, Object>> logout(@RequestBody Map<String, Object> authData) {
+        Token tokenInDb = tr.findTokenById(UUID.fromString((String) authData.get("token")));
+        if (tokenInDb == null) {
+            return (ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+        }
+        else {
+            tr.delete(tokenInDb);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 
     @PostMapping("/api/users/register")
     public void Register(@RequestBody Map<String, Object> user) {
