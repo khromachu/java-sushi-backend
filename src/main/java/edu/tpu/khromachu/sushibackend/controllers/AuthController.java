@@ -45,6 +45,22 @@ public class AuthController {
         return ur.findAll();
         }
 
+    @PostMapping("/api/users/register")
+    public void Register(@RequestBody Map<String, Object> user) {
+        System.out.println(user);
+        User newUser = new User();
+
+        newUser.setAddress((String) user.get("address"));
+        newUser.setFirstName((String) user.get("firstName"));
+        newUser.setLogin((String) user.get("login"));
+        newUser.setPassword((String) user.get("password"));
+        newUser.setPhone((String) user.get("phone"));
+        newUser.setSecondName((String) user.get("secondName"));
+        newUser.setUserType((Integer) user.get("userType"));
+
+        ur.save(newUser);
+    }
+
     @PostMapping("/api/auth/by/pwd")
     public ResponseEntity<Map<String, Object>> authByPwd(@RequestBody Map<String, Object> authData){
         User userToAuth = ur.findUserByLoginAndPassword((String) authData.get("login"), (String) authData.get("password"));
@@ -102,22 +118,6 @@ public class AuthController {
             tr.delete(tokenInDb);
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
-    }
-
-    @PostMapping("/api/users/register")
-    public void Register(@RequestBody Map<String, Object> user) {
-        System.out.println(user);
-        User newUser = new User();
-
-        newUser.setAddress((String) user.get("address"));
-        newUser.setFirstName((String) user.get("firstName"));
-        newUser.setLogin((String) user.get("login"));
-        newUser.setPassword((String) user.get("password"));
-        newUser.setPhone((String) user.get("phone"));
-        newUser.setSecondName((String) user.get("secondName"));
-        newUser.setUserType((Integer) user.get("userType"));
-
-        ur.save(newUser);
     }
 
     @PostMapping("/api/users/editProfile/{id}")
