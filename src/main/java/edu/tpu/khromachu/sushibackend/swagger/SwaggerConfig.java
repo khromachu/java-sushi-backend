@@ -38,7 +38,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Sushi-server")
-                .description("Swagger build")
+                .description("Swagger build for Java-project by khromachu")
                 .version("1.0")
                 .build();
     }
