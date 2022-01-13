@@ -1,12 +1,12 @@
 package edu.tpu.khromachu.sushibackend.controllers;
 
-import edu.tpu.khromachu.sushibackend.domain.Item;
-import edu.tpu.khromachu.sushibackend.domain.ItemType;
 import edu.tpu.khromachu.sushibackend.domain.Token;
 import edu.tpu.khromachu.sushibackend.domain.User;
 import edu.tpu.khromachu.sushibackend.repository.TokenRepository;
 import edu.tpu.khromachu.sushibackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +38,12 @@ public class AuthController {
         cal.add(Calendar.DATE, days);
         return cal.getTime();
     }
+
+    @GetMapping("/api/users/get/all")
+    public List <User> getAllUsers(){
+        System.out.println(ur.findAll().toString());
+        return ur.findAll();
+        }
 
     @PostMapping("/api/auth/by/pwd")
     public ResponseEntity<Map<String, Object>> authByPwd(@RequestBody Map<String, Object> authData){
