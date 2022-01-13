@@ -1,9 +1,21 @@
 package edu.tpu.khromachu.sushibackend.controllers;
 
+import edu.tpu.khromachu.sushibackend.domain.Order;
+import edu.tpu.khromachu.sushibackend.repository.OrderRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class OrdersController {
+    @Autowired
+    private OrderRepository or;
+
     //router.get('/get/all/:userId', async (req,res) => {
     //  try{
     //    const user = await db.Users.findByPk(req.params['userId'])
@@ -70,18 +82,18 @@ public class OrdersController {
     //  }
     //})
     //
-    //router.post('/edit/status', async (req, res) => {
-    //  try{
-    //    const order = await db.Orders.update(
-    //      { status: req.body['status'] },
-    //      { where: { id: req.body['id'] } })
-    //    res.send(order)
-    //  }
-    //  catch (err){
-    //    res.status(500).send(err.message)
-    //  }
-    //})
-    //
+    @PostMapping("/api/orders/updateStatus/{id}")
+    public void updateOrderStatus(@PathVariable Integer id,
+                           @RequestBody Map<String, Object> orderDetails){
+
+        System.out.println(id);
+        Order order = or.getById(id);
+
+        order.setStatus((Integer)orderDetails.get("status"));
+
+        or.save(order);
+    }
+
     //router.get('/get/diff/:userId', async (req,res) => {
     //  try{
     //    const user = await db.Users.findByPk(req.params['userId'])

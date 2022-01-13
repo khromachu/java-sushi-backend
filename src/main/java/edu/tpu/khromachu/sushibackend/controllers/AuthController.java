@@ -1,9 +1,19 @@
 package edu.tpu.khromachu.sushibackend.controllers;
 
+import edu.tpu.khromachu.sushibackend.domain.User;
+import edu.tpu.khromachu.sushibackend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class AuthController {
+    @Autowired
+    private UserRepository ur;
+
     //router.post('/by/pwd', async (req,res) => {
     //  try{
     //    const authData = req.body
@@ -80,23 +90,22 @@ public class AuthController {
     //  }
     //
     //})
-    //router.post('/register', async (req,res) => {
-    //  try{
-    //    const authData = req.body
-    //    const user = await db.Users.create({
-    //      login: authData.login,
-    //      phone: authData.phone,
-    //      password: authData.password,
-    //      firstName: authData.firstName,
-    //      secondName: authData.secondName
-    //    })
-    //    res.send(user)
-    //  }
-    //  catch (err){
-    //    res.status(500).send(err.message)
-    //  }
-    //})
-    //
+    @PostMapping("/api/users/register")
+    public void Register(@RequestBody Map<String, Object> user) {
+        System.out.println(user);
+        User newUser = new User();
+
+        newUser.setAddress((String) user.get("address"));
+        newUser.setFirstName((String) user.get("firstName"));
+        newUser.setLogin((String) user.get("login"));
+        newUser.setPassword((String) user.get("password"));
+        newUser.setPhone((String) user.get("phone"));
+        newUser.setSecondName((String) user.get("secondName"));
+        newUser.setUserType((Integer) user.get("userType"));
+
+        ur.save(newUser);
+    }
+
     //router.post('/profile/edit', async (req,res) => {
     //  try{
     //    const authData = req.body

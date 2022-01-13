@@ -53,7 +53,7 @@ public class ItemsController {
     }
 
     @PostMapping("/api/items/create")
-    public void createNote(@RequestBody Map<String, Object> item){
+    public void createItem(@RequestBody Map<String, Object> item){
         System.out.println(item);
         Item newItem = new Item();
         ItemType itemType = itr.getById((Integer) item.get("itemTypeId"));
