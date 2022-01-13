@@ -30,15 +30,15 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis (RequestHandlerSelectors.basePackage ("com.example.demo.controller")) // Пакет сканирования Swagger
+                .apis (RequestHandlerSelectors.basePackage ("edu.tpu.khromachu.sushibackend.controllers")) // Пакет сканирования Swagger
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Swagger build")
-                .description("Sushi-service")
+                .title("Sushi-server")
+                .description("Swagger build")
                 .version("1.0")
                 .build();
     }
